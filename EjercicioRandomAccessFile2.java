@@ -42,6 +42,8 @@ public class EjercicioRandomAccessFile2 {
 			}
 			case "b": {
 				System.out.println("\tMostrar todos los Equipos");
+				
+				mostrarDatos() ;
 				break;
 			}
 			case "c": {
@@ -144,6 +146,42 @@ public class EjercicioRandomAccessFile2 {
 	
 	public static void mostrarDatos() {
 		
+		int cantidadRegistros = (int)fich.length() / longitudRegistros ;
+		
+		System.out.println("\t\tLIGA");
+		System.out.println("Nombre del Equipo"
+				+ "\t\tPlays"
+				+ "\tWins"
+				+ "\tTies"
+				+ "\tLost"
+				+ "\tTotal Points");
+		
+		try (RandomAccessFile raf = new RandomAccessFile(fich, "r")) {
+						
+			for (int i = 0 ; i <cantidadRegistros ; i ++) {
+				
+				raf.seek(i * longitudRegistros);
+				
+				//Lectura del nombre (String)
+				for (int j = 0 ; j < 30 ; j ++) {
+					System.out.print(raf.readChar());
+				}
+				
+				//Lectura de los Números (int)
+				System.out.print("\t" + raf.readInt());
+				System.out.print("\t" + raf.readInt());
+				System.out.print("\t" + raf.readInt());
+				System.out.print("\t" + raf.readInt());
+				System.out.print("\t\t" + raf.readInt() + "\n");
+			}
+		} catch (FileNotFoundException e) {
+
+			e.printStackTrace();
+		} catch (IOException e1) {
+
+			e1.printStackTrace();
+		}
+		System.out.println();
 	}
 	
 	
