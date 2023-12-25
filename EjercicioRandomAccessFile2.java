@@ -77,29 +77,10 @@ public class EjercicioRandomAccessFile2 {
 
 	}
 	
-	
-//	/*
-//	 * Método CrearFile recibe File como parámetro
-//	 * En caso de que no exista el fichero lo crea.
-//	 * Actualiza el número de la variable numeroRegistros.
-//	 */
-//	public static void crearFile() {
-//		try(RandomAccessFile raf = new RandomAccessFile(fich, "rw")) {
-//			
-//			
-//			
-//		} catch (FileNotFoundException e) {
-//			
-//			e.printStackTrace();
-//			
-//		} catch (IOException e) {
-//			
-//			e.printStackTrace();
-//		}
-//	}
-	
+		
 	/*
 	 * Metodo introducirDatos
+	 * Agregará un registro nuevo al fichero con los datos indicados por el usuario
 	 */
 	public static void introducirDatos() {
 		
@@ -152,7 +133,11 @@ public class EjercicioRandomAccessFile2 {
 		}
 	}
 	
-	
+	/*
+	 * Método mostrarDatos
+	 * Mostrará en el terminal los registros del fichero
+	 * No mostrará los registros marcados para eliminar (primer byte 0)
+	 */
 	public static void mostrarDatos() {
 		
 		int cantidadRegistros = (int)fich.length() / longitudRegistros ;
@@ -212,7 +197,11 @@ public class EjercicioRandomAccessFile2 {
 		System.out.println();
 	}
 	
-	
+	/*
+	 * Método buscarEquipo
+	 * Mostrará todos los datos del registro cuya columna "nombre" coincida con el indicado por el usuario
+	 * No mostrará los registros marcados para eliminar (primer byte 0)
+	 */
 	public static boolean buscarEquipo() {
 		Scanner scnStr = new Scanner(System.in) ;
 		int cantidadRegistros = (int)fich.length() / longitudRegistros ;
@@ -221,56 +210,64 @@ public class EjercicioRandomAccessFile2 {
 		System.out.print("Introduzca el nombre del equipo: ");
 		String nombreBuscado = scnStr.nextLine().toLowerCase() ;
 		
-		try (RandomAccessFile raf = new RandomAccessFile(fich, "r")) {
+		if (nombreBuscado.equals("")) {
+			return false ;
 			
-			for (int i = 0 ; i <cantidadRegistros ; i ++) {
+		} else {
+			try (RandomAccessFile raf = new RandomAccessFile(fich, "r")) {
 				
-				raf.seek(i * longitudRegistros);
-				
-				//Lectura del nombre (String)
-				for (int j = 0 ; j < 30 ; j ++) {
+				for (int i = 0 ; i <cantidadRegistros ; i ++) {
 					
-					nombreEncontrado = nombreEncontrado + raf.readChar() ;
+					raf.seek(i * longitudRegistros);
+					
+					//Lectura del nombre (String)
+					for (int j = 0 ; j < 30 ; j ++) {
+						
+						nombreEncontrado = nombreEncontrado + raf.readChar() ;
+					}
+					
+					if (nombreEncontrado.toLowerCase().trim().equals(nombreBuscado)) {
+						
+						System.out.println("\nNombre del Equipo"
+								+ "\t\tPlays"
+								+ "\tWins"
+								+ "\tTies"
+								+ "\tLost"
+								+ "\tTotal Points");
+						
+						System.out.print(nombreEncontrado);
+						
+						//Lectura de los Números (int)
+						System.out.print("\t" + raf.readInt());
+						System.out.print("\t" + raf.readInt());
+						System.out.print("\t" + raf.readInt());
+						System.out.print("\t" + raf.readInt());
+						System.out.print("\t\t" + raf.readInt() + "\n\n");
+						
+						return true ;
+						
+					} else {
+						
+						nombreEncontrado = "" ;
+					}
 				}
-				
-				if (nombreEncontrado.toLowerCase().trim().equals(nombreBuscado)) {
-					
-					System.out.println("\nNombre del Equipo"
-							+ "\t\tPlays"
-							+ "\tWins"
-							+ "\tTies"
-							+ "\tLost"
-							+ "\tTotal Points");
-					
-					System.out.print(nombreEncontrado);
-					
-					//Lectura de los Números (int)
-					System.out.print("\t" + raf.readInt());
-					System.out.print("\t" + raf.readInt());
-					System.out.print("\t" + raf.readInt());
-					System.out.print("\t" + raf.readInt());
-					System.out.print("\t\t" + raf.readInt() + "\n\n");
-					
-					return true ;
-					
-				} else {
-					
-					nombreEncontrado = "" ;
-				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
 			
-			
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
 		}
 		
 		System.out.println();
 		return false ;
 	}
 	
-	
+	/*
+	 * Método borrarEquipo
+	 * Marcará el registro cuya columna "nombre" coincida con el nombre indicado por el usuario, para borrado (primero byte 0)
+	 * Las columnas que no son el nombre se marcan con "-1"
+	 */
 	public static void borrarEquipo() {
 		Scanner scnStr = new Scanner(System.in) ;
 		int cantidadRegistros = (int)fich.length() / longitudRegistros ;
