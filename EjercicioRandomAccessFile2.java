@@ -44,10 +44,16 @@ public class EjercicioRandomAccessFile2 {
 				System.out.println("\tMostrar todos los Equipos");
 				
 				mostrarDatos() ;
+				
 				break;
 			}
 			case "c": {
 				System.out.println("\tBuscar un Equipo");
+				
+				if (!buscarEquipo()) {
+					System.out.println("No se ha encontrado ningún equipo\n");
+				}
+				
 				break;
 			}
 			case "d": {
@@ -185,8 +191,60 @@ public class EjercicioRandomAccessFile2 {
 	}
 	
 	
-	public static void buscarEquipo() {
+	public static boolean buscarEquipo() {
+		Scanner scnStr = new Scanner(System.in) ;
+		int cantidadRegistros = (int)fich.length() / longitudRegistros ;
+		String nombreEncontrado = "" ;
 		
+		System.out.print("Introduzca el nombre del equipo: ");
+		String nombreBuscado = scnStr.nextLine().toLowerCase() ;
+		
+		try (RandomAccessFile raf = new RandomAccessFile(fich, "r")) {
+			
+			for (int i = 0 ; i <cantidadRegistros ; i ++) {
+				
+				raf.seek(i * longitudRegistros);
+				
+				//Lectura del nombre (String)
+				for (int j = 0 ; j < 30 ; j ++) {
+					nombreEncontrado = nombreEncontrado + raf.readChar() ;
+				}
+				
+				if (nombreEncontrado.toLowerCase().trim().equals(nombreBuscado)) {
+					
+					System.out.println("\nNombre del Equipo"
+							+ "\t\tPlays"
+							+ "\tWins"
+							+ "\tTies"
+							+ "\tLost"
+							+ "\tTotal Points");
+					
+					System.out.print(nombreEncontrado);
+					
+					//Lectura de los Números (int)
+					System.out.print("\t" + raf.readInt());
+					System.out.print("\t" + raf.readInt());
+					System.out.print("\t" + raf.readInt());
+					System.out.print("\t" + raf.readInt());
+					System.out.print("\t\t" + raf.readInt() + "\n\n");
+					
+					return true ;
+					
+				} else {
+					
+					nombreEncontrado = "" ;
+				}
+			}
+			
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		System.out.println();
+		return false ;
 	}
 	
 	
